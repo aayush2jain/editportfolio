@@ -32,7 +32,7 @@ function ResumeNew() {
         </Row>
 
         <Row className="resume">
-          <Document file={pdf} className="d-flex justify-content-center">
+          <Document file='https://drive.google.com/file/d/163Pk33K0dF0ckegZEv9r4AUGCVfOQ6oN/view?usp=drive_link' className="d-flex justify-content-center">
             <Page pageNumber={1} scale={width > 786 ? 1.7 : 0.6} />
           </Document>
         </Row>

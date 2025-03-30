@@ -1,18 +1,59 @@
 import React from "react";
-import { Container, Row, Col } from "react-bootstrap";
+import { Container, Row, Col, Button } from "react-bootstrap";
 import ProjectCard from "./ProjectCards";
 import Particle from "../Particle";
+import Card from "react-bootstrap/Card";
+import { CgWebsite } from "react-icons/cg";
 import leaf from "../../Assets/Projects/leaf.png";
 import emotion from "../../Assets/Projects/emotion.png";
 import editor from "../../Assets/Projects/codeEditor.png";
 import chatify from "../../Assets/Projects/chatify.png";
 import suicide from "../../Assets/Projects/suicide.png";
 import bitsOfCode from "../../Assets/Projects/blog.png";
-
+import { useParams } from "react-router-dom";
+import { useState,useEffect } from "react";
+import axios from "axios";
+import NavBar from "../Navbar";
 function Projects() {
+   const { id } = useParams(); 
+    console.log("userId",id)// Get userId from URL
+    const [projectData, setprojectData] = useState(null);
+    const [loading,setloading] = useState(false);
+    const handleSaveProject = async (id, updatedProject) => {
+      setloading(true);
+      try {
+        console.log("updatedProject",updatedProject);
+        const response = await axios.put(`http://localhost:4000/changeproject/${id}`, updatedProject);
+        console.log("Response:", response.data);
+      } catch (error) {
+        console.error("Error updating project:", error);
+      }
+      finally{
+        setloading(false);
+        alert("changes are saved");
+      }
+    };
+    
+    useEffect(() => {
+      if (id) {
+        axios
+          .get(`http://localhost:4000/project/${id}`) // Pass userId to API
+          .then((response) => {
+            setprojectData(response.data);
+            console.log("User data:", response.data);
+          })
+          .catch((error) => console.error("Error fetching user data:", error));
+
+      }
+    }, [id]);
+  
+    if (!projectData) {
+      return <h2>Loading...</h2>;
+    }
   return (
     <Container fluid className="project-section">
       <Particle />
+      <NavBar id = {id}/>
       <Container>
         <h1 className="project-heading">
           My Recent <strong className="purple">Works </strong>
@@ -20,73 +61,87 @@ function Projects() {
         <p style={{ color: "white" }}>
           Here are a few projects I've worked on recently.
         </p>
-        <Row style={{ justifyContent: "center", paddingBottom: "10px" }}>
-          <Col md={4} className="project-card">
-            <ProjectCard
-              imgPath={chatify}
-              isBlog={false}
-              title="Chatify"
-              description="Personal Chat Room or Workspace to share resources and hangout with friends build with react.js, Material-UI, and Firebase. Have features which allows user for realtime messaging, image sharing as well as supports reactions on messages."
-              ghLink="https://github.com/soumyajit4419/Chatify"
-              demoLink="https://chatify-49.web.app/"
-            />
-          </Col>
+        <Row style={{ justifyContent: "center", paddingBottom: "10px",position: "relative" }}>
+        {projectData.map((project, index) => (
+            <Col md={4} className="project-card" key={project.id} style={{ position: "relative" }}>
+              <Card className="project-card-view">
+                <Card.Img variant="top" src={project.image} alt="card-img" />
+                <Card.Body>
+                  <Card.Title>
+                    <input
+                      type="text"
+                      value={project.projectname}
+                      style={{
+                        padding: "10px",
+                        fontSize: "16px",
+                        border: "1px solid #ccc",
+                        borderRadius: "5px",
+                        backgroundColor: "transparent",
+                        textAlign: "center",
+                        color:"white"
+                      }}
+                      onChange={(e) => {
+                        const newProjectName = e.target.value;
+                        setprojectData((prevData) =>
+                          prevData.map((p) =>
+                            p.id === project.id ? { ...p, projectname: newProjectName } : p
+                          )
+                        );
+                      }}
+                    />
+                  </Card.Title>
+                  <Card.Text style={{ textAlign: "justify" }}>
+                  <textarea
+                      type="text"
+                      value={project.description}
+                      style={{
+                        padding: "10px",
+                        fontSize: "16px",
+                        border: "1px solid #ccc",
+                        borderRadius: "5px",
+                        backgroundColor: "transparent",
+                        textAlign: "center",
+                        width:"100%",
+                        height:"auto",
+                        color:"white"
+                      }}
+                      onChange={(e) => {
+                        const newdescription = e.target.value;
+                        setprojectData((prevData) =>
+                          prevData.map((p) =>
+                            p.id === project.id ? { ...p,description: newdescription} : p
+                          )
+                        );
+                      }}
+                    />
+                  </Card.Text>
 
-          <Col md={4} className="project-card">
-            <ProjectCard
-              imgPath={bitsOfCode}
-              isBlog={false}
-              title="Bits-0f-C0de"
-              description="My personal blog page build with Next.js and Tailwind Css which takes the content from makdown files and renders it using Next.js. Supports dark mode and easy to write blogs using markdown."
-              ghLink="https://github.com/soumyajit4419/Bits-0f-C0de"
-              demoLink="https://blogs.soumya-jit.tech/"
-            />
-          </Col>
-
-          <Col md={4} className="project-card">
-            <ProjectCard
-              imgPath={editor}
-              isBlog={false}
-              title="Editor.io"
-              description="Online code and markdown editor build with react.js. Online Editor which supports html, css, and js code with instant view of website. Online markdown editor for building README file which supports GFM, Custom Html tags with toolbar and instant preview.Both the editor supports auto save of work using Local Storage"
-              ghLink="https://github.com/soumyajit4419/Editor.io"
-              demoLink="https://editor.soumya-jit.tech/"              
-            />
-          </Col>
-
-          <Col md={4} className="project-card">
-            <ProjectCard
-              imgPath={leaf}
-              isBlog={false}
-              title="Plant AI"
-              description="Used the plant disease dataset from Kaggle and trained a image classifer model using 'PyTorch' framework using CNN and Transfer Learning with 38 classes of various plant leaves. The model was successfully able to detect diseased and healthy leaves of 14 unique plants. I was able to achieve an accuracy of 98% by using Resnet34 pretrained model."
-              ghLink="https://github.com/soumyajit4419/Plant_AI"
-              demoLink="https://plant49-ai.herokuapp.com/"
-            />
-          </Col>
-
-          <Col md={4} className="project-card">
-            <ProjectCard
-              imgPath={suicide}
-              isBlog={false}
-              title="Ai For Social Good"
-              description="Using 'Natural Launguage Processing' for the detection of suicide-related posts and user's suicide ideation in cyberspace  and thus helping in sucide prevention."
-              ghLink="https://github.com/soumyajit4419/AI_For_Social_Good"
-              // demoLink="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstley" <--------Please include a demo link here
-            />
-          </Col>
-
-          <Col md={4} className="project-card">
-            <ProjectCard
-              imgPath={emotion}
-              isBlog={false}
-              title="Face Recognition and Emotion Detection"
-              description="Trained a CNN classifier using 'FER-2013 dataset' with Keras and tensorflow backened. The classifier sucessfully predicted the various types of emotions of human. And the highest accuracy obtained with the model was 60.1%.
-              Then used Open-CV to detect the face in an image and then pass the face to the classifer to predict the emotion of a person."
-              ghLink="https://github.com/soumyajit4419/Face_And_Emotion_Detection"
-              // demoLink="https://blogs.soumya-jit.tech/"      <--------Please include a demo link here 
-            />
-          </Col>
+                  {project.demolink && (
+                    <Button variant="primary" href={project.demolink} target="_blank" style={{ marginLeft: "10px" }}>
+                      <CgWebsite /> &nbsp; {"Demo"}
+                    </Button>
+                  )}
+                </Card.Body>
+              </Card>
+              {
+                loading?(
+                  <Button
+                  style={{ zIndex: 1000, marginTop: "10px", position: "absolute", left: "135px" }}
+                  onClick={() => handleSaveProject(project.id,{projectname:project.projectname,description: project.description })}
+                >
+                  Saving Changes
+                </Button>
+                ):(
+                  <Button
+                  style={{ zIndex: 1000, marginTop: "10px", position: "absolute", left: "135px" }}
+                  onClick={() => handleSaveProject(project.id,{projectname:project.projectname,description: project.description })}
+                >
+                  Save Changes
+                </Button>
+                )
+              }
+            </Col>
+          ))}
         </Row>
       </Container>
     </Container>

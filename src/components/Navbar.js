@@ -7,6 +7,8 @@ import Button from "react-bootstrap/Button";
 import { Link } from "react-router-dom";
 import { CgGitFork } from "react-icons/cg";
 import { ImBlog } from "react-icons/im";
+import { useEffect } from "react";
+import axios from "axios";
 import {
   AiFillStar,
   AiOutlineHome,
@@ -16,10 +18,10 @@ import {
 
 import { CgFileDocument } from "react-icons/cg";
 
-function NavBar() {
+function NavBar({id}) {
   const [expand, updateExpanded] = useState(false);
   const [navColour, updateNavbar] = useState(false);
-
+  const [userData, setUserData] = useState(null);
   function scrollHandler() {
     if (window.scrollY >= 20) {
       updateNavbar(true);
@@ -29,6 +31,17 @@ function NavBar() {
   }
 
   window.addEventListener("scroll", scrollHandler);
+  useEffect(() => {
+    if (id) {
+      axios
+        .get(`http://localhost:4000/user/${id}`) // Pass userId to API
+        .then((response) => {
+          setUserData(response.data.resume);
+          console.log("User data resume:", response.data.resume);
+        })
+        .catch((error) => console.error("Error fetching user data:", error));
+      }
+  }, [id]);
 
   return (
     <Navbar
@@ -38,8 +51,7 @@ function NavBar() {
       className={navColour ? "sticky" : "navbar"}
     >
       <Container>
-        <Navbar.Brand href="/" className="d-flex">
-          <img src={logo} className="img-fluid logo" alt="brand" />
+        <Navbar.Brand href="/" className="">
         </Navbar.Brand>
         <Navbar.Toggle
           aria-controls="responsive-navbar-nav"
@@ -54,7 +66,7 @@ function NavBar() {
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="ms-auto" defaultActiveKey="#home">
             <Nav.Item>
-              <Nav.Link as={Link} to="/" onClick={() => updateExpanded(false)}>
+              <Nav.Link as={Link} to={`/${id}`} onClick={() => updateExpanded(false)}>
                 <AiOutlineHome style={{ marginBottom: "2px" }} /> Home
               </Nav.Link>
             </Nav.Item>
@@ -62,7 +74,7 @@ function NavBar() {
             <Nav.Item>
               <Nav.Link
                 as={Link}
-                to="/about"
+                to={`/about/${id}`}
                 onClick={() => updateExpanded(false)}
               >
                 <AiOutlineUser style={{ marginBottom: "2px" }} /> About
@@ -72,7 +84,7 @@ function NavBar() {
             <Nav.Item>
               <Nav.Link
                 as={Link}
-                to="/project"
+                to={`/project/${id}`}
                 onClick={() => updateExpanded(false)}
               >
                 <AiOutlineFundProjectionScreen
@@ -81,37 +93,22 @@ function NavBar() {
                 Projects
               </Nav.Link>
             </Nav.Item>
-
+{
+userData &&(
             <Nav.Item>
-              <Nav.Link
-                as={Link}
-                to="/resume"
-                onClick={() => updateExpanded(false)}
-              >
-                <CgFileDocument style={{ marginBottom: "2px" }} /> Resume
-              </Nav.Link>
-            </Nav.Item>
+  <Nav.Link
+    as="a" 
+    href={userData} 
+    target="_blank" 
+    rel="noopener noreferrer"
+    onClick={() => updateExpanded(false)}
+  >
+    <CgFileDocument style={{ marginBottom: "2px" }} /> Resume
+  </Nav.Link>
+</Nav.Item>
+)
+}
 
-            <Nav.Item>
-              <Nav.Link
-                href="https://soumyajitblogs.vercel.app/"
-                target="_blank"
-                rel="noreferrer"
-              >
-                <ImBlog style={{ marginBottom: "2px" }} /> Blogs
-              </Nav.Link>
-            </Nav.Item>
-
-            <Nav.Item className="fork-btn">
-              <Button
-                href="https://github.com/soumyajit4419/Portfolio"
-                target="_blank"
-                className="fork-btn-inner"
-              >
-                <CgGitFork style={{ fontSize: "1.2em" }} />{" "}
-                <AiFillStar style={{ fontSize: "1.1em" }} />
-              </Button>
-            </Nav.Item>
           </Nav>
         </Navbar.Collapse>
       </Container>
