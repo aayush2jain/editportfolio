@@ -42,7 +42,7 @@ function Home() {
     console.log("Form Submitted:", formData);
     setLoading(true);
     try{
-         const response = await axios.put(`http://localhost:4000/user/updateintro/${id}`,formData);
+         const response = await axios.put(`https://portfolioback-kappa.vercel.app/user/updateintro/${id}`,formData);
          console.log("see response",response);
     }
     catch(error){
@@ -56,7 +56,7 @@ function Home() {
   useEffect(() => {
     if (id) {
       axios
-        .get(`http://localhost:4000/user/${id}`) // Pass userId to API
+        .get(`https://portfolioback-kappa.vercel.app/user/${id}`) // Pass userId to API
         .then((response) => {
           setUserData(response.data);
           console.log("User data:", response.data);
@@ -64,7 +64,7 @@ function Home() {
         })
         .catch((error) => console.error("Error fetching user data:", error));
         axios
-        .get(`http://localhost:4000/roles/${id}`) // Pass userId to API
+        .get(`https://portfolioback-kappa.vercel.app/roles/${id}`) // Pass userId to API
         .then((response) => {
          setRoleData(response.data);
           console.log("User data:", response.data);

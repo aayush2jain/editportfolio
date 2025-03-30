@@ -23,7 +23,7 @@ function Projects() {
       setloading(true);
       try {
         console.log("updatedProject",updatedProject);
-        const response = await axios.put(`http://localhost:4000/changeproject/${id}`, updatedProject);
+        const response = await axios.put(`https://portfolioback-kappa.vercel.app/changeproject/${id}`, updatedProject);
         console.log("Response:", response.data);
       } catch (error) {
         console.error("Error updating project:", error);
@@ -37,7 +37,7 @@ function Projects() {
     useEffect(() => {
       if (id) {
         axios
-          .get(`http://localhost:4000/project/${id}`) // Pass userId to API
+          .get(`https://portfolioback-kappa.vercel.app/project/${id}`) // Pass userId to API
           .then((response) => {
             setprojectData(response.data);
             console.log("User data:", response.data);

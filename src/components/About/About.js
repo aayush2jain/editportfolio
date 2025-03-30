@@ -59,7 +59,7 @@ function About() {
         console.log("Form Submitted:", formData);
         setloading(true);
         try{
-        const response = await axios.put(`http://localhost:4000/user/updateinfo/${id}`,{formData,hobbies: hobbyData.map((h) => h.hobby),});
+        const response = await axios.put(`https://portfolioback-kappa.vercel.app/user/updateinfo/${id}`,{formData,hobbies: hobbyData.map((h) => h.hobby),});
         console.log("User data updated:", response);
         }
         catch(error){
@@ -73,7 +73,7 @@ function About() {
     useEffect(() => {
       if (id) {
         axios
-          .get(`http://localhost:4000/about/${id}`) // Pass userId to API
+          .get(`https://portfolioback-kappa.vercel.app/about/${id}`) // Pass userId to API
           .then((response) => {
             setUserData(response.data); 
             setFormData({intro: response.data.intro, quote: response.data.quote});
@@ -81,7 +81,7 @@ function About() {
           })
           .catch((error) => console.error("Error fetching user data:", error));
           axios
-          .get(`http://localhost:4000/hobby/${id}`) // Pass userId to API
+          .get(`https://portfolioback-kappa.vercel.app/hobby/${id}`) // Pass userId to API
           .then((response) => {
            sethobbyData(response.data);
             console.log("Userhobby data:", response.data);
